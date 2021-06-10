@@ -49,13 +49,33 @@ public class JDBC_vezbe {
         return 0;
     }
     
+    public static void radniciSaImenom(String ime)
+    {
+        Connection conn=DB.getInstance().getConnection();
+        String query="{ call SPRadniciSaImenom (?) }";
+        try (CallableStatement cs= conn.prepareCall(query)){     
+            cs.setString(1, ime);
+            try (ResultSet rs=cs.executeQuery()){
+                System.out.println("Radnici sa imenom "+ime);
+                while(rs.next())
+                    System.out.println("BrLK:"+rs.getInt("BrLK")+
+                            " prezime:"+rs.getString("Prezime"));
+            } catch (SQLException ex) {
+                Logger.getLogger(JDBC_vezbe.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(JDBC_vezbe.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     /**
      *
      * @param args
      */
     public static void main(String[] args) {
         ispisiRadnike();
-        System.out.println("Broj radnika sa imenom: " + brRadnikaSaImenom("Marko"));
+        //System.out.println("Broj radnika sa imenom: " + brRadnikaSaImenom("Marko"));
+        radniciSaImenom("Marko");
     }
     
 }
