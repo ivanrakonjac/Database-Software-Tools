@@ -24,9 +24,26 @@ public class JDBC_vezbe {
             ResultSet rs = stmt.executeQuery("select * from Radnik");
         )
         {
-                
+            ResultSetMetaData rsmd=rs.getMetaData();
+            for(int i=1; i<=rsmd.getColumnCount(); i++){
+                System.out.print(String.format("%-18s", rsmd.getColumnName(i)));
+            }
+            
+            System.out.println();
+            
             while(rs.next()){
-                System.out.println(rs.getString(2) + " " + rs.getString("Prezime"));
+                
+                for(int i=1; i<=rsmd.getColumnCount(); i++){    
+                    if(rsmd.getColumnType(i)==java.sql.Types.INTEGER)
+                        System.out.print(String.format("%-18d", rs.getInt(i)));
+                    else if(rsmd.getColumnType(i)==java.sql.Types.VARCHAR ||
+                            rsmd.getColumnType(i)==java.sql.Types.CHAR)
+                        System.out.print(String.format("%-18s", rs.getString(i)));
+                }
+                System.out.println();
+                
+                
+                //System.out.println(rs.getString(2) + " " + rs.getString("Prezime"));
             }
             
         }catch (SQLException ex) {
@@ -100,7 +117,7 @@ public class JDBC_vezbe {
      */
     public static void main(String[] args) {
         
-        izmeniImeRadnicima();
+        //izmeniImeRadnicima();
         ispisiRadnike();
         //System.out.println("Broj radnika sa imenom: " + brRadnikaSaImenom("Marko"));
         //radniciSaImenom("Marko");
