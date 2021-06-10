@@ -33,12 +33,29 @@ public class JDBC_vezbe {
             Logger.getLogger(JDBC_vezbe.class.getName()).log(Level.SEVERE, null, ex);
         }
     }   
+    
+    public static int brRadnikaSaImenom(String ime)
+    {
+        Connection conn=DB.getInstance().getConnection();
+        String query="{ call SPBrojRadnikaSaImenom (?,?) }"; 
+        try (CallableStatement cs= conn.prepareCall(query)){
+            cs.setString(1, ime);
+            cs.registerOutParameter(2, java.sql.Types.INTEGER);
+            cs.execute();
+            return cs.getInt(2);
+        } catch (SQLException ex) {
+            Logger.getLogger(JDBC_vezbe.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
+    
     /**
      *
      * @param args
      */
     public static void main(String[] args) {
         ispisiRadnike();
+        System.out.println("Broj radnika sa imenom: " + brRadnikaSaImenom("Marko"));
     }
     
 }
