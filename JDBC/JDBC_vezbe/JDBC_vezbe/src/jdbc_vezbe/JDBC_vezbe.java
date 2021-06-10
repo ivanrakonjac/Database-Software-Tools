@@ -39,15 +39,20 @@ public class JDBC_vezbe {
         Connection connection = DB.getInstance().getConnection();
         
         try(
-            PreparedStatement stmt = connection.prepareStatement("select * from Radnik", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            PreparedStatement stmt = connection.prepareStatement("select * from Radnik join Prodavac on Radnik.BrLK = Prodavac.BrLK", 
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
             ResultSet rs = stmt.executeQuery();
         )
         {
                 
-            if (rs.next()){
-                System.out.println(rs.getString(2) + " " + rs.getString("Prezime"));
-                rs.updateString(2, "Test");
-                rs.updateRow();
+            while (rs.next()){
+                
+                if(Integer.parseInt(rs.getString("BrSprata"))>2){
+                    System.out.println(rs.getString(2) + " " + rs.getString("Prezime") + " " + rs.getString("BrSprata"));
+                    rs.updateString(2, "Test");
+                    rs.updateRow();
+                }
+                
             }
             
         }catch (SQLException ex) {
