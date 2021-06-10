@@ -28,6 +28,26 @@ BEGIN
 
 	)
 END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Ivan
+-- Description:	Procedure for changing value of column Prosek in Student table
+-- =============================================
+CREATE PROCEDURE changeProsek
+	@IdS int
+AS
+BEGIN
+	update Student
+	set Prosek=[dbo].[fStudentsGPA] (@IdS)
+	where Id=@IdS
+END
+GO
+
 
 
 /* Trigger for Ocena table*/
@@ -65,9 +85,13 @@ BEGIN
 	while @@FETCH_STATUS = 0
 	begin
 		
-		update Student
-		set Prosek=[dbo].[fStudentsGPA] (@IdS)
-		where Id=@IdS
+		SELECT @message = 'Studenti kojima je dodata ocena'
+		PRINT @message
+		PRINT @IdS
+		PRINT ' '
+		PRINT @Ocena
+
+		exec [dbo].[changeProsek] @IdS
 
 		fetch from @kursor
 		into @IdS, @Ocena
@@ -78,4 +102,3 @@ BEGIN
 	deallocate @kursor
 
 END
-
