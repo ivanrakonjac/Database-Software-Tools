@@ -32,7 +32,28 @@ public class JDBC_vezbe {
         }catch (SQLException ex) {
             Logger.getLogger(JDBC_vezbe.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }   
+    }  
+    
+    public static void izmeniImeRadnicima(){
+        
+        Connection connection = DB.getInstance().getConnection();
+        
+        try(
+            PreparedStatement stmt = connection.prepareStatement("select * from Radnik", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = stmt.executeQuery();
+        )
+        {
+                
+            if (rs.next()){
+                System.out.println(rs.getString(2) + " " + rs.getString("Prezime"));
+                rs.updateString(2, "Test");
+                rs.updateRow();
+            }
+            
+        }catch (SQLException ex) {
+            Logger.getLogger(JDBC_vezbe.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }  
     
     public static int brRadnikaSaImenom(String ime)
     {
@@ -73,9 +94,11 @@ public class JDBC_vezbe {
      * @param args
      */
     public static void main(String[] args) {
+        
+        izmeniImeRadnicima();
         ispisiRadnike();
         //System.out.println("Broj radnika sa imenom: " + brRadnikaSaImenom("Marko"));
-        radniciSaImenom("Marko");
+        //radniciSaImenom("Marko");
     }
     
 }
