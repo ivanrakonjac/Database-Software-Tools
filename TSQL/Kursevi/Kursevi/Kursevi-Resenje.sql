@@ -154,3 +154,54 @@ BEGIN
 		end
 END
 GO
+
+/* Trigger for Ocena table - version 2 */
+
+USE [Kursevi]
+GO
+/****** Object:  Trigger [dbo].[prosecnaOcenaStudenta]    Script Date: 10.6.2021. 14:21:37 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER TRIGGER [dbo].[prosecnaOcenaStudenta] 
+   ON  [dbo].[Ocena] 
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+	
+	declare @kursorStudenti cursor
+	declare @idS int
+	declare @studenti TABLE (IdS int)
+
+	insert into @studenti
+	select inserted.IdS
+	from inserted
+		
+	insert into @studenti
+	select deleted.IdS
+	from deleted
+	
+	set @kursorStudenti = cursor for
+	select distinct IdS
+	from @studenti
+
+	open @kursorStudenti
+
+	fetch from @kursorStudenti
+	into @idS
+
+	while @@FETCH_STATUS = 0
+	begin
+	
+		execute [dbo].[changeProsek] @idS
+			
+		fetch from @kursorStudenti
+		into @idS
+	end
+
+	close @kursorStudenti
+	deallocate @kursorStudenti
+END
+GO
