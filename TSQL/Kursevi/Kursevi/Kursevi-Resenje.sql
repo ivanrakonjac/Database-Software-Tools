@@ -66,39 +66,91 @@ ALTER TRIGGER [dbo].[prosecnaOcenaStudenta]
 AS 
 BEGIN
 	
-	SET NOCOUNT ON;
+	declare @brI int
+	declare @brD int
+	declare @idSStari int, @idSNovi int
+		
+	declare @kursorI cursor, @kursorD cursor
 
-    declare @kursor cursor
-	declare @IdS int, @Ocena int,@message VARCHAR(100);
-	declare @Prosek decimal(5,2);
-	declare @ProsekInt int;
-
-	set @kursor = cursor for 
-	select IdS, Ocena
+	set @kursorI = cursor for
+	select IdS
 	from inserted
 
-	open @kursor
+	set @kursorD = cursor for
+	select IdS
+	from deleted
 
-	fetch from @kursor
-	into @IdS, @Ocena
+	select @brI = count(*)
+	from inserted
 
-	while @@FETCH_STATUS = 0
-	begin
-		
-		SELECT @message = 'Studenti kojima je dodata ocena'
-		PRINT @message
-		PRINT @IdS
-		PRINT ' '
-		PRINT @Ocena
+	select  @brD = COUNT(*)
+	from deleted
 
-		exec [dbo].[changeProsek] @IdS
+	if(@brI = 0) -- delete
+		begin
+			open @kursorD
 
-		fetch from @kursor
-		into @IdS, @Ocena
-	end
+			fetch next from @kursorD
+			into @IdSStari
 
+			while @@FETCH_STATUS = 0
+			begin
+				execute [dbo].[changeProsek] @idSStari
 
-	close @kursor
-	deallocate @kursor
+				fetch next from @kursorD
+				into @IdSStari
+			end
 
+			close @kursorD
+			deallocate @kursorD
+		end
+	else if(@brD = 0) -- insert
+		begin
+			open @kursorI
+
+			fetch next from @kursorI
+			into @IdSNovi
+
+			while @@FETCH_STATUS = 0
+			begin
+				execute [dbo].[changeProsek] @IdSNovi
+
+				fetch next from @kursorI
+				into @IdSNovi
+			end
+
+			close @kursorI
+			deallocate @kursorI
+		end
+	else -- update
+		begin
+			open @kursorI
+			open @kursorD
+
+			fetch next from @kursorI
+			into @IdSNovi
+
+			fetch next from @kursorD
+			into @IdSStari
+
+			while @@FETCH_STATUS = 0
+			begin
+				execute [dbo].[changeProsek] @idSNovi
+				if(@idSStari <> @idSNovi)
+					execute [dbo].[changeProsek] @idSStari
+
+				fetch next from @kursorI
+				into @IdSNovi
+
+				fetch next from @kursorD
+				into @IdSStari
+			end
+
+			close @kursorI
+			deallocate @kursorI
+
+			close @kursorD
+			deallocate @kursorD
+		end
 END
+GO
