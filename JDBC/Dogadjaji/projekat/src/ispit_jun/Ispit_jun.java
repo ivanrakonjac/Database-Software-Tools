@@ -344,6 +344,19 @@ public class Ispit_jun {
             Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static void kolikoJeKarataKupio (int SifK){
+        Connection conn = DB.getInstance().getConnection();
+        
+        try(CallableStatement cstmt = conn.prepareCall("{ call dbo.numOfBuyedTickets (?, ?) }")){
+            cstmt.setInt(1, SifK);
+            cstmt.registerOutParameter(2, java.sql.Types.INTEGER);
+            cstmt.execute();
+            System.out.println("Kupac sa IDjem: " + SifK + " je kupio " + cstmt.getInt(2) + " karata");
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
     
     /***
@@ -352,7 +365,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        deleteVazi(56);
+        kolikoJeKarataKupio(2);
     }
     
 }
