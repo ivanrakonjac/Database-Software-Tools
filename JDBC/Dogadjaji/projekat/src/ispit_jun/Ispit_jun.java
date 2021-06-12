@@ -371,6 +371,25 @@ public class Ispit_jun {
             Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static void insertKupcaAndGetGeneratedKey(String Ime){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "insert into KUPAC(Ime) values (?) ";
+        
+        try(PreparedStatement pstmt = conn.prepareStatement(query,PreparedStatement.RETURN_GENERATED_KEYS))
+        {
+            pstmt.setString(1, Ime);
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            
+            if(rs.next()){
+                System.out.println("Kreiran novi KUPAC kojem je automatski dodeljena SifK " + rs.getInt(1)); 
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
     
     /***
@@ -379,7 +398,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        brojKupacaSaImenom("Dragan");
+        insertKupcaAndGetGeneratedKey("Milos");
     }
     
 }
