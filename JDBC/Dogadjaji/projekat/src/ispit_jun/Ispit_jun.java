@@ -309,6 +309,21 @@ public class Ispit_jun {
             Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static void insertKupca(String Ime){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "select * from Kupac";
+        
+        try(PreparedStatement stmt = conn.prepareCall(query,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = stmt.executeQuery();)
+        {
+            rs.moveToInsertRow();
+            rs.updateString("Ime",Ime);
+            rs.insertRow();
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
     
     /***
@@ -317,7 +332,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        updateImeKupca(1, "Marko");
+        insertKupca("Dragan");
     }
     
 }
