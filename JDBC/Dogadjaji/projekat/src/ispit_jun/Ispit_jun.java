@@ -324,6 +324,26 @@ public class Ispit_jun {
             Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static void deleteVazi(int SifU){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "select * from Vazi where SifU=?";
+        
+        try(PreparedStatement stmt = conn.prepareCall(query,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE)){
+            
+            stmt.setInt(1, SifU);
+            
+            try(ResultSet rs = stmt.executeQuery();){
+                rs.next();
+                rs.first();
+                
+                rs.deleteRow();
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
     
     /***
@@ -332,7 +352,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        insertKupca("Dragan");
+        deleteVazi(56);
     }
     
 }
