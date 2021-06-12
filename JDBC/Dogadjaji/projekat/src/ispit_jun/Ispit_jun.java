@@ -232,12 +232,31 @@ public class Ispit_jun {
         Connection conn = DB.getInstance().getConnection();
         String query = "select * from Dogadjaj";
         
-        try(Statement stmt = conn.createStatement()){
-        
-            ResultSet rs = stmt.executeQuery(query);
-            
+        try(
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);)
+        {
             while(rs.next()){
                 System.out.println(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString("Opis"));
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void selectDogadjajWithSifD(int SifD){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "select * from Dogadjaj where SifD=?";
+        
+        try(PreparedStatement stmt = conn.prepareCall(query)){
+            
+            stmt.setInt(1, SifD);
+            
+            try(ResultSet rs = stmt.executeQuery();){
+                while(rs.next()){
+                    System.out.println(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString("Opis"));
+                }
             }
             
         } catch (SQLException ex) {
@@ -254,7 +273,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        selectAllFromDogadjaj();
+        selectDogadjajWithSifD(3);
         //SlobodnaProdajaUlaznica("D2", 3);
     }
     
