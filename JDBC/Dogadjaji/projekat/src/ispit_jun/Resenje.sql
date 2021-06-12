@@ -55,3 +55,51 @@ BEGIN
 
 	RETURN
 END
+
+USE [DOGADJAJI]
+GO
+/****** Object:  StoredProcedure [dbo].[getUlazniceFromRed]    Script Date: 12.6.2021. 22:00:06 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Ivan
+-- Create date: Jun 2021
+-- Description:	Vraca SifU i Status Ulaznica koje su u statusu "S" i imaju SifR=@SifR
+-- =============================================
+ALTER PROCEDURE [dbo].[getUlazniceFromRed]
+	@SifR int
+AS
+BEGIN
+	select SifU, Status
+	from ULAZNICA
+	where Status='S' and SifR=@SifR
+END
+
+USE [DOGADJAJI]
+GO
+/****** Object:  StoredProcedure [dbo].[spDogadjajSteta]    Script Date: 12.6.2021. 22:00:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Ivan
+-- Create date: Jun 2021.
+-- Description:	Procedura koja racuna stetu nastalu otkazivanjem dogadjaja
+-- =============================================
+ALTER PROCEDURE [dbo].[spDogadjajSteta]
+	@IdDogadjaja int
+AS
+BEGIN
+	select sum(RED.FaktorR*SEKTOR.FaktorS*ULAZNICA.ZvanicnaCena) as Cena
+	from Vazi
+	join ULAZNICA
+	on ULAZNICA.SifU = VAZI.SifU
+	join RED
+	on RED.SifR = ULAZNICA.SifR
+	join SEKTOR
+	on SEKTOR.SifS = RED.SifS
+	where ULAZNICA.Status='P' and VAZI.SifD = @IdDogadjaja
+END
