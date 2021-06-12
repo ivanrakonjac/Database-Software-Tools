@@ -357,6 +357,20 @@ public class Ispit_jun {
             Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static void brojKupacaSaImenom (String Ime){
+        Connection conn = DB.getInstance().getConnection();
+        
+        try(CallableStatement cstmt = conn.prepareCall("{ ?= call dbo.numOfKupacWithName (?) }")){
+            
+            cstmt.registerOutParameter(1, java.sql.Types.INTEGER);
+            cstmt.setString("Ime", Ime);
+            cstmt.execute();
+            System.out.println("Kupaca sa imenom: " + Ime + " ima " + cstmt.getInt(1) + ".");
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
     
     /***
@@ -365,7 +379,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        kolikoJeKarataKupio(2);
+        brojKupacaSaImenom("Dragan");
     }
     
 }
