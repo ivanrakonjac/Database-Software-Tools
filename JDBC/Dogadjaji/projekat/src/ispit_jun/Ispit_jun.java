@@ -289,7 +289,26 @@ public class Ispit_jun {
         }
     }
     
-    
+    public static void updateImeKupca(int SifK, String Ime){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "select * from Kupac where SifK=?";
+        
+        try(PreparedStatement stmt = conn.prepareCall(query,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE)){
+            
+            stmt.setInt(1, SifK);
+            
+            try(ResultSet rs = stmt.executeQuery();){
+                rs.next();
+                rs.first();
+                
+                rs.updateString("Ime", Ime);
+                rs.updateRow();
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
    
     
     /***
@@ -298,8 +317,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        updateDatumDogadjaja(3);
-        //SlobodnaProdajaUlaznica("D2", 3);
+        updateImeKupca(1, "Marko");
     }
     
 }
