@@ -5,6 +5,7 @@
  */
 package ispit_jun;
 
+import java.lang.ref.Cleaner;
 import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -25,8 +26,6 @@ import java.util.logging.Logger;
 public class Ispit_jun {
 
     private Connection connection=DB.getInstance().getConnection();
-    
-    
     
     public static int RedBrojMesta(int red)
     {
@@ -226,6 +225,27 @@ public class Ispit_jun {
     }
     
         
+    
+    /* TEST CRUD OPERACIJA */
+    
+    public static void selectAllFromDogadjaj(){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "select * from Dogadjaj";
+        
+        try(Statement stmt = conn.createStatement()){
+        
+            ResultSet rs = stmt.executeQuery(query);
+            
+            while(rs.next()){
+                System.out.println(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString("Opis"));
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
    
     
     /***
@@ -234,7 +254,8 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        SlobodnaProdajaUlaznica("D2", 3);
+        selectAllFromDogadjaj();
+        //SlobodnaProdajaUlaznica("D2", 3);
     }
     
 }
