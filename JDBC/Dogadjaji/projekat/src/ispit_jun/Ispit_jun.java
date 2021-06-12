@@ -9,6 +9,7 @@ import java.lang.ref.Cleaner;
 import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -264,6 +265,30 @@ public class Ispit_jun {
         }
     }
     
+    public static void updateDatumDogadjaja(int SifD){
+        Connection conn = DB.getInstance().getConnection();
+        String query = "select * from Dogadjaj where SifD=?";
+        
+        try(PreparedStatement stmt = conn.prepareCall(query,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE)){
+            
+            stmt.setInt(1, SifD);
+            
+            try(ResultSet rs = stmt.executeQuery();){
+                rs.next();
+                rs.first();
+                
+                java.util.Date dateUtil = new java.util.Date();
+                Date date = new Date(dateUtil.getTime());
+                rs.updateDate("Datum", date);
+                
+                rs.updateRow();
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Ispit_jun.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     
    
     
@@ -273,7 +298,7 @@ public class Ispit_jun {
 	 *
      */
     public static void main(String[] args) {
-        selectDogadjajWithSifD(3);
+        updateDatumDogadjaja(3);
         //SlobodnaProdajaUlaznica("D2", 3);
     }
     
