@@ -103,3 +103,75 @@ BEGIN
 	on SEKTOR.SifS = RED.SifS
 	where ULAZNICA.Status='P' and VAZI.SifD = @IdDogadjaja
 END
+
+
+USE [DOGADJAJI]
+GO
+/****** Object:  Trigger [dbo].[decNumOfTickets]    Script Date: 13.6.2021. 14:20:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Ivan
+-- Create date: Jun 2021.
+-- Description:	Smanjuje broj karata u svim dogadjajima za 1, kada se napravi novi dogadjaj
+-- =============================================
+ALTER TRIGGER [dbo].[decNumOfTickets] 
+   ON [dbo].[DOGADJAJ]
+   AFTER INSERT
+AS 
+BEGIN
+	
+	declare @Kursor cursor
+	declare @BrUlaznica int, @SifD int
+	declare @Dogadjaji TABLE (SifD int, BrojPreostalihUlaznica int )
+
+	insert into @Dogadjaji
+	select SifD, BrojPreostalihUlaznica
+	from DOGADJAJ
+
+	set @Kursor = cursor for
+	select SIfD, BrojPreostalihUlaznica
+	from @Dogadjaji
+
+	open @Kursor
+
+	fetch from @Kursor
+	into @SifD, @BrUlaznica
+
+	while @@FETCH_STATUS = 0
+	begin
+		PRINT RTRIM(CAST(@SifD AS NVARCHAR(10)))  + ' '  + RTRIM(CAST(@BrUlaznica AS NVARCHAR(10))); 
+
+		Set @BrUlaznica = @BrUlaznica - 1
+
+		exec dbo.spDecNumOfTickets @SifD, @BrUlaznica
+ 		
+		fetch from @Kursor
+		into @SifD, @BrUlaznica
+
+	end
+
+	close @Kursor
+	deallocate @Kursor
+
+END
+
+USE DOGADJAJI
+GO
+-- =============================================
+-- Author:		Ivan
+-- Create date: Jun 2021.
+-- Description:	Prosledjenom @SifD smanji broj ulaznica za 1
+-- =============================================
+CREATE PROCEDURE spDecNumOfTickets
+	@SifD int,
+	@NumOfTick int
+AS
+BEGIN
+	update DOGADJAJ
+	set BrojPreostalihUlaznica = @NumOfTick
+	where SifD = @SifD
+END
+GO
